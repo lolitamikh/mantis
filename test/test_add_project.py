@@ -14,9 +14,11 @@ testdata = [
 
 @pytest.mark.parametrize("project", testdata, ids=[repr(x) for x in testdata])
 def test_add_project(app, project):
-    old_projects = app.project.get_projects_list()
+    app.session.login("administrator", "root")
+    old_projects = app.soap.get_projects_list()
     app.project.create_project(project)
-    new_projects = app.project.get_projects_list()
+    app.session.logout()
+    new_projects = app.soap.get_projects_list()
     assert len(old_projects) + 1 == len(new_projects)
     old_projects.append(project)
     assert sorted(old_projects, key=Project.name) == sorted(new_projects, key=Project.name)
